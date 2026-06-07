@@ -65,25 +65,9 @@ Show:
 - Description/notes if any (from the `description` field)
 - Item number: **"Item N of X"**
 
-### Suggest a category
+### Pick a category and file it
 
-Pick the best-fit category from the 7 above. State it and give a one-sentence reason. Be direct — don't hedge with "maybe" or "could be."
-
-Example: *"→ Cognition & Learning — this is about how information is processed and retained."*
-
-### Wait for confirmation
-
-Accept:
-| Input | Meaning |
-|-------|---------|
-| "yes", "y", enter, category number (1–7) | Confirm the suggested category (or pick by number) |
-| A category name or partial match | Override to that category |
-| "drop", "delete", "skip" | Drop without filing |
-| "stop", "done", "quit" | End the session |
-
-If the user types a number 1–7, map it to the corresponding category.
-
-### Append to the vault file
+Pick the best-fit category from the 7 above — no confirmation needed, just decide and act. Then immediately append to the vault file.
 
 Use this Python snippet to append the observation as a bullet under the correct section header. Replace `CATEGORY` with the exact section title (e.g. `Power & Systems`) and `OBSERVATION_TEXT` with the task content:
 
@@ -134,9 +118,7 @@ curl -s -X POST \
   "https://api.todoist.com/api/v1/tasks/TASK_ID/close"
 ```
 
-Confirm: "✓ Filed under [Category]."
-
-Then move immediately to the next item.
+Confirm with a single line: "✓ [Category] — [task title]." Then move immediately to the next item.
 
 ---
 
