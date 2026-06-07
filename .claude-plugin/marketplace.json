@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "tjsimon-skills",
+  "description": "Personal Claude Code skills",
+  "owner": { "name": "tjsimonX" },
+  "plugins": [
+    {
+      "name": "personal",
+      "description": "Personal Claude Code skills",
+      "author": { "name": "tjsimonX" },
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/tjsimonX/claude-skills.git",
+        "path": "plugins/personal",
+        "ref": "main"
+      }
+    }
+  ]
+}
