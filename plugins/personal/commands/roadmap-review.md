@@ -1,8 +1,6 @@
 ---
-name: roadmap-review
 description: Review the Winsome roadmap and surface next priorities
-argument-hint: <focus-area>
-allowed-tools: [Read, Bash]
+allowed-tools: Read, Bash
 ---
 
 # Roadmap Review
