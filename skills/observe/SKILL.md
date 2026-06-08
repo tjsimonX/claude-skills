@@ -42,7 +42,7 @@ If no tasks are returned, tell the user: "No tasks labeled 'observation' found."
 
 The Observations vault note lives at:
 ```
-/Users/home/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault/Observations 👀.md
+~/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault/Observations 👀.md
 ```
 
 The defined categories (section headers in the file) are:
@@ -73,7 +73,8 @@ Use this Python snippet to append the observation as a bullet under the correct 
 
 ```bash
 python3 << 'PYEOF'
-VAULT = '/Users/home/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault/Observations \U0001f440.md'
+import os
+VAULT = os.path.expanduser('~/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault/Observations \U0001f440.md')
 CATEGORY = 'CATEGORY'
 TEXT = 'OBSERVATION_TEXT'
 
