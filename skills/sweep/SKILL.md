@@ -105,6 +105,7 @@ Show this clearly on its own line:
 | Input | Action |
 |-------|--------|
 | Any existing section name or unambiguous prefix | Move task to that section |
+| "spawn", "spin up", "claude" | Invoke `/spawn <task_id>` — launches a context-aware Claude Code session, moves task to In-Progress, then resumes sweep |
 | "drop", "delete", "d" | Delete the task |
 | "keep", "skip", "k" | Leave as-is, move on |
 | "move to <Project>" or any project name | Move task to that project (no section) |

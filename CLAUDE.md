@@ -4,6 +4,9 @@ Personal Claude Code skills. Each skill lives in `skills/<name>/SKILL.md` and is
 
 ## Skills
 
+### `/spawn <task_id_or_description>`
+Spins up a context-aware Claude Code session in iTerm2 for a task. Fetches the task from Todoist, maps the project to its local repo, reads the project's CLAUDE.md for context, crafts a focused brief, moves the task to In-Progress, and launches Claude Code in the right directory. Called automatically by `/sweep` when you say "spawn" on a `[Claude]` task.
+
 ### `/sweep`
 Sweeps every Todoist project for tasks with no section and no due date. Dev sub-projects invoke `/roadmap-review` for each. All other projects (including the Dev parent) use a dynamic flow — reads each project's actual sections and routes tasks into them.
 
