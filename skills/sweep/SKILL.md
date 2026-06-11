@@ -89,6 +89,14 @@ For each task in order:
 - **Title** + description (if any)
 - "**Item N of X**"
 
+**Assess ownership:** Before giving a take, determine who owns this task:
+- **Claude** — code changes, file edits, API calls, script runs, config updates, anything executable in a Claude Code session
+- **User** — requires physical presence, a human decision, an external account, a phone call, or real-world action
+
+Show this clearly on its own line:
+- `[Claude]` — I can do this
+- `[You]` — needs you
+
 **Give a take:** 1–2 direct sentences — what is this, and where does it most naturally belong given the project's existing sections?
 
 **Wait for decision:**
