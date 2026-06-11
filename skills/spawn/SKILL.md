@@ -79,6 +79,7 @@ Write a focused brief to `/tmp/spawn_brief.txt`. The brief must give the spawned
 Structure:
 ```
 Task: TASK_CONTENT
+Todoist Task ID: TASK_ID
 Project: PROJECT_NAME (PROJECT_PATH)
 Context: PROJECT_CONTEXT
 
@@ -87,6 +88,11 @@ Description: TASK_DESCRIPTION   ← omit this line if description is empty
 Mission: [1-2 sentences stating exactly what to build or investigate, derived from the task content and description. Be specific — name the tool, API, file, or behavior involved.]
 
 Start by [one concrete first step — e.g. "researching what the Copilot Money app API exposes" or "reading the existing dispatch.py to understand the routing logic"].
+
+---
+When this task is complete, close it in Todoist:
+  TOKEN=$(/usr/libexec/PlistBuddy -c "Print TODOIST_API_TOKEN" ~/winsomeApp/Winsome/winsome/Config/Secrets.local.plist 2>/dev/null)
+  curl -s -X POST -H "Authorization: Bearer $TOKEN" "https://api.todoist.com/api/v1/tasks/TASK_ID/close"
 ```
 
 Write this to `/tmp/spawn_brief.txt`:
@@ -116,7 +122,7 @@ curl -s -X POST \
   "https://api.todoist.com/api/v1/sections"
 ```
 
-Move the task:
+Move the task and stamp the task ID into its description so it's self-documenting in Todoist:
 ```bash
 curl -s -X POST \
   -H "Authorization: Bearer TOKEN" \
@@ -124,6 +130,16 @@ curl -s -X POST \
   -d '{"section_id": "IN_PROGRESS_SECTION_ID"}' \
   "https://api.todoist.com/api/v1/tasks/TASK_ID/move"
 ```
+
+Then update the task description to include the task ID (preserve any existing description):
+```bash
+curl -s -X POST \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"description": "task_id: TASK_ID\nEXISTING_DESCRIPTION"}' \
+  "https://api.todoist.com/api/v1/tasks/TASK_ID"
+```
+If there is no existing description, use just `"task_id: TASK_ID"`.
 
 ---
 
