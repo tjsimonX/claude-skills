@@ -4,8 +4,8 @@ Personal Claude Code skills. Each skill lives in `skills/<name>/SKILL.md` and is
 
 ## Skills
 
-### `/triage <ProjectName>`
-Cycles through unsectioned tasks in a Todoist project one by one. For each task, gives a recommendation and waits for the user to decide: Roadmap, Mining, move to another project, drop, or keep. Uses reasoning to assess each task's readiness and fit.
+### `/sweep`
+Sweeps every Todoist project for tasks with no section and no due date. Dev sub-projects invoke `/roadmap-review` for each. All other projects (including the Dev parent) use a dynamic flow — reads each project's actual sections and routes tasks into them.
 
 ### `/mine <ProjectName>`
 Refines raw ideas from a project's Todoist Mining section one by one — discusses each until it's concrete enough to implement, then promotes to Roadmap or drops.
