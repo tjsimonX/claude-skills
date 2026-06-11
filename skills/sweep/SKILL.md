@@ -144,13 +144,13 @@ When the project is exhausted, print a one-line summary:
 
 ---
 
-## Step 5: Roadmap-review flow (Dev sub-projects)
+## Step 5: Dev review flow (Dev sub-projects)
 
 For each Dev sub-project, in order:
 
-Announce: **"Now reviewing [ProjectName] via roadmap-review."**
+Announce: **"Now reviewing [ProjectName] via dev-review."**
 
-Then invoke `/roadmap-review [ProjectName]`.
+Then invoke `/dev-review [ProjectName]`.
 
 Wait for it to complete before moving to the next sub-project.
 

@@ -13,8 +13,8 @@ Refines raw ideas from a project's Todoist Mining section one by one — discuss
 ### `/observe`
 Farms Todoist tasks labeled `observation`, sorts them into categories in `Observations.md` in the vault, and closes the tasks.
 
-### `/roadmap-review <ProjectName>`
-Cycles through tasks in the Roadmap section of a Todoist project. For each task, gives a recommendation and waits for the user to decide: implement (close), drop (delete), or skip to Mining. Uses reasoning to assess complexity and prioritization.
+### `/dev-review <ProjectName>`
+Processes unsectioned tasks in a Dev project one by one — implement (close), mine (move to Mining), or drop. Also invoked automatically by `/sweep` for each Dev sub-project.
 
 ### `/strategic-roadmap`
 Turns a raw vision or North Star idea into a complete, multi-year personal strategic roadmap. Extracts the vision, builds a named pillar framework (3–5 positions), researches intellectual lineage and failure modes, grounds the vision physically, maps business/career opportunities by tier, builds a layered people/access strategy, defines a mentor filter, generates daily orientation questions, and produces two polished HTML deliverables — a daily brief and a full navigable plan.
