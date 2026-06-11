@@ -31,7 +31,8 @@ curl -s -H "Authorization: Bearer TOKEN" https://api.todoist.com/api/v1/projects
 
 From the response:
 - Find the project whose `name` is "Dev" (case-insensitive). Store its `id` as `DEV_PARENT_ID`.
-- Collect all projects whose `parent_id` equals `DEV_PARENT_ID` — these are **Dev sub-projects** (roadmap-review flow).
+- Collect all projects whose `parent_id` equals `DEV_PARENT_ID` — these are **Dev sub-projects** (dev-review flow).
+- Find the project whose `name` is "Lists" (case-insensitive). Store its `id` as `LISTS_PARENT_ID`. Exclude this project and any project whose `parent_id` equals `LISTS_PARENT_ID` from the sweep entirely — these are shopping/reference lists.
 - Everything else except Inbox — including the Dev parent itself — is a **standard project** (dynamic sections flow).
 
 ---
