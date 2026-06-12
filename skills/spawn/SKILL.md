@@ -153,7 +153,7 @@ tell application "iTerm2"
   create window with default profile
   tell current window
     tell current session
-      write text "cd PROJECT_PATH && claude --dangerously-skip-permissions \"$(cat /tmp/spawn_brief.txt)\""
+      write text "cd PROJECT_PATH && claude --model opus --dangerously-skip-permissions \"$(cat /tmp/spawn_brief.txt)\""
     end tell
   end tell
 end tell
