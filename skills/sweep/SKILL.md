@@ -122,7 +122,7 @@ curl -s -X POST \
   -H "Authorization: Bearer TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"section_id": "MATCHED_SECTION_ID"}' \
-  "https://api.todoist.com/api/v1/tasks/TASK_ID"
+  "https://api.todoist.com/api/v1/tasks/TASK_ID/move"
 ```
 Confirm: "→ [Section name]."
 

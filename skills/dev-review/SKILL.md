@@ -1,7 +1,6 @@
 ---
 name: Dev Review
 description: Process unsectioned tasks in a Dev project one by one — implement (close), mine (move to Mining), or drop. Invoke as /dev-review <ProjectName>.
-disable-model-invocation: true
 allowed-tools: Bash
 ---
 
@@ -103,7 +102,7 @@ curl -s -X POST \
   -H "Authorization: Bearer TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"section_id": "MINING_SECTION_ID"}' \
-  "https://api.todoist.com/api/v1/tasks/TASK_ID"
+  "https://api.todoist.com/api/v1/tasks/TASK_ID/move"
 ```
 Confirm: "→ Mining."
 
