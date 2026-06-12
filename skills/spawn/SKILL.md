@@ -165,7 +165,7 @@ tell application "iTerm2"
   create window with default profile
   tell current window
     tell current session
-      write text "ssh -t home@homes-mac-mini.taild39f71.ts.net 'tmux attach -t SESSION_ID'"
+      write text "ssh -t home@homes-mac-mini.taild39f71.ts.net '/opt/homebrew/bin/tmux attach -t SESSION_ID'"
     end tell
   end tell
 end tell
