@@ -90,7 +90,9 @@ Mission: [1-2 sentences stating exactly what to build or investigate, derived fr
 Start by [one concrete first step — e.g. "researching what the Copilot Money app API exposes" or "reading the existing dispatch.py to understand the routing logic"].
 
 ---
-When this task is complete, close it in Todoist:
+When this task is complete:
+1. If this involved a running app or server-side feature, invoke /verify to confirm the change works before closing.
+2. Close it in Todoist:
   TOKEN=$(/usr/libexec/PlistBuddy -c "Print TODOIST_API_TOKEN" ~/winsomeApp/Winsome/winsome/Config/Secrets.local.plist 2>/dev/null)
   curl -s -X POST -H "Authorization: Bearer $TOKEN" "https://api.todoist.com/api/v1/tasks/TASK_ID/close"
 ```
