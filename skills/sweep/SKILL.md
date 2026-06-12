@@ -2,6 +2,7 @@
 name: Sweep
 description: Sweeps every Todoist project for tasks that have no section and no due date. Standard projects (including the Dev parent) use a dynamic section-based flow. Dev sub-projects invoke /roadmap-review. Invoke as /sweep.
 disable-model-invocation: true
+model: sonnet
 ---
 
 ## Sweep
