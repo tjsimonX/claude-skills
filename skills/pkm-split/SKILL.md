@@ -288,3 +288,4 @@ Ask: "Does this look right?" Do not close any Todoist task or commit any git cha
 - **Orphan notes are a signal.** If a note has no MOC link after the restructure, flag it.
 - **One MOC per domain, not one MOC per file.** MOCs should be sparse at first and grow as the vault grows.
 - **Don't over-atomize.** A cohesive living document (North Star plan, series bible, social OS) can stay unified. Atomic doesn't mean microscopic — it means one idea, fully developed.
+- **Aim for notes that make the argument, not just state the conclusion.** A good atomic note includes the reasoning behind the claim — why you believe it, in your own words. A one-sentence note is a placeholder; a note with 3–5 sentences of argument is one you can actually think with later.
