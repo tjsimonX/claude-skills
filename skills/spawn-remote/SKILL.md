@@ -1,10 +1,10 @@
 ---
-name: Spawn
-description: Spin up a context-aware Claude Code session locally for a task. Accepts a Todoist task ID or a free-form description. Loads the right project directory, reads CLAUDE.md for context, crafts a focused brief, moves the task to In-Progress, and opens a new iTerm2 window with Claude running in the project directory. Invoke as /spawn <task_id_or_description>.
+name: Spawn Remote (Deprecated)
+description: DEPRECATED — original remote Mac mini variant of /spawn. Kept for reference. Use /spawn for local sessions. Launches via the session server with an iTerm tmux attach to the mini. Invoke as /spawn-remote <task_id_or_description>.
 allowed-tools: Bash
 ---
 
-## Spawn
+## Spawn Remote (Deprecated)
 
 **Input:** $ARGUMENTS
 
@@ -55,9 +55,9 @@ Read the project routes from:
 cat ~/winsomeApp/Winsome/winsomeTerminal/config.json
 ```
 
-Match `PROJECT_NAME` against the keys in `machines.local.routes` first, then `machines.server.routes` as fallback (case-insensitive). Store the matched path as `PROJECT_PATH`, expanding `~` to the full home directory of the local machine (`/Users/terrencesimon`).
+Match `PROJECT_NAME` against the keys in `machines.server.routes` (case-insensitive). Store the **exact key as written in config.json** as `ROUTE_KEY` — the session server requires an exact match. Store the matched path as `PROJECT_PATH`, expanding `~` to the full home directory.
 
-If no match, use `PROJECT_PATH=~/winsomeApp/Winsome` as the default and note it in the brief.
+If no match, use `ROUTE_KEY=Winsome` and `PROJECT_PATH=~/winsomeApp/Winsome` as the default and note it in the brief.
 
 ---
 
@@ -145,9 +145,19 @@ If there is no existing description, use just `"task_id: TASK_ID"`.
 
 ---
 
-## Step 7: Launch a local session in iTerm2
+## Step 7: Launch the session on the Mac mini
 
-Open a new iTerm2 window, navigate to the project directory, and start Claude with the brief as the opening prompt:
+The session must live on the Mac mini (always-on) so it stays joinable from the iPhone via the Claude app after the launching machine sleeps. Start it through the session server, passing the brief as the opening prompt and the task title as the session label:
+
+```bash
+bash ~/winsomeApp/Winsome/scripts/open_session.sh "ROUTE_KEY" "TASK_CONTENT" /tmp/spawn_brief.txt
+```
+
+On success this prints two lines: the remote-control URL (`SESSION_URL`) and the tmux session ID (`SESSION_ID`).
+
+If the script fails (session server unreachable, project unknown), report the error to the user and stop — do **not** fall back to a local session.
+
+Then open an iTerm2 window attached to the session, so work continues in the terminal like a local spawn. Use the Tailscale address — it works from any network:
 
 ```bash
 osascript << EOF
@@ -155,14 +165,12 @@ tell application "iTerm2"
   create window with default profile
   tell current window
     tell current session
-      write text "cd PROJECT_PATH && claude --dangerously-skip-permissions \"\$(cat /tmp/spawn_brief.txt)\""
+      write text "ssh -t home@homes-mac-mini.taild39f71.ts.net '/opt/homebrew/bin/tmux attach -t SESSION_ID'"
     end tell
   end tell
 end tell
 EOF
 ```
-
-This opens Claude interactively with the brief pre-loaded as the first message. The session runs locally on this machine.
 
 ---
 
@@ -171,8 +179,11 @@ This opens Claude interactively with the brief pre-loaded as the first message. 
 Tell the user:
 ```
 Spawned: TASK_CONTENT
-Project: PROJECT_NAME → PROJECT_PATH
+Project: PROJECT_NAME → Mac mini (ROUTE_KEY)
+Session: SESSION_URL
 Todoist: → In-Progress
 ```
+
+Note that the session also appears in the Claude app under Code (named after the task), and that closing the iTerm window detaches but leaves the session running on the mini.
 
 If called from within /sweep, resume the sweep at the next task immediately.
