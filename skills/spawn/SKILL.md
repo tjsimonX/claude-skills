@@ -1,6 +1,6 @@
 ---
 name: Spawn
-description: Spin up a context-aware Claude Code session locally for a task. Accepts a Todoist task ID or a free-form description. Loads the right project directory, reads CLAUDE.md for context, crafts a focused brief, moves the task to In-Progress, and opens a new iTerm2 window with Claude running in the project directory. Invoke as /spawn <task_id_or_description>.
+description: Spin up a context-aware Claude Code session on the Mac mini session server for a task. Accepts a Todoist task ID or a free-form description. Loads the right project directory, reads CLAUDE.md for context, crafts a focused brief, moves the task to In-Progress, launches the session on the session server, and opens a focused WinsomeChat window (falls back to a local iTerm2 session if the server is unreachable). Invoke as /spawn <task_id_or_description>.
 allowed-tools: Bash
 ---
 
@@ -145,33 +145,71 @@ If there is no existing description, use just `"task_id: TASK_ID"`.
 
 ---
 
-## Step 7: Launch a local session in iTerm2
+## Step 7: Launch the session on the Mac mini session server
 
-Open a new iTerm2 window, navigate to the project directory, and start Claude with the brief as the opening prompt:
+Route the session to the always-on session server on the Mac mini so it becomes a managed session — visible in the WinsomeChat sessions window and in WinsomeField.
+
+The server resolves the project against its own `machines.server.routes`, so pass the **project name** (not a path). If the task was free-form (no `PROJECT_NAME`), default to `Winsome`.
+
+Build the JSON payload from the brief and POST it. The server returns `201` immediately (it starts the session in the background):
 
 ```bash
-osascript << EOF
-tell application "iTerm2"
-  create window with default profile
-  tell current window
-    tell current session
-      write text "cd PROJECT_PATH && claude --dangerously-skip-permissions \"\$(cat /tmp/spawn_brief.txt)\""
-    end tell
-  end tell
-end tell
-EOF
+PROJECT_FOR_SERVER="${PROJECT_NAME:-Winsome}"
+PAYLOAD=$(python3 - "$PROJECT_FOR_SERVER" "$TASK_CONTENT" <<'PY'
+import json, sys
+brief = open('/tmp/spawn_brief.txt').read()
+print(json.dumps({"project": sys.argv[1], "prompt": brief, "label": sys.argv[2]}))
+PY
+)
+RESPONSE=$(curl -s -m 15 -w $'\n%{http_code}' -X POST \
+  -H "Content-Type: application/json" \
+  -d "$PAYLOAD" \
+  http://homes-mac-mini.taild39f71.ts.net:7891/sessions)
+HTTP_CODE=$(printf '%s\n' "$RESPONSE" | tail -1)
+BODY=$(printf '%s\n' "$RESPONSE" | sed '$d')
+SESSION_ID=$(printf '%s' "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
 ```
 
-This opens Claude interactively with the brief pre-loaded as the first message. The session runs locally on this machine.
+If `HTTP_CODE` is `201` and `SESSION_ID` is non-empty → continue to Step 8.
+
+**If the POST failed** (no `201`, empty `SESSION_ID`, or a curl/connection error), fail loudly — do **not** silently fall back. Tell the user:
+
+```
+Session server unreachable (HTTP_CODE). Open locally instead? (y/n)
+```
+
+- If **yes**, launch the local fallback in iTerm2 (session won't appear in WinsomeField):
+
+  ```bash
+  osascript << EOF
+  tell application "iTerm2"
+    create window with default profile
+    tell current window
+      tell current session
+        write text "cd PROJECT_PATH && claude --dangerously-skip-permissions \"\$(cat /tmp/spawn_brief.txt)\""
+      end tell
+    end tell
+  end tell
+  EOF
+  ```
+
+- If **no**, stop. The task is still in In-Progress and the brief remains at `/tmp/spawn_brief.txt`.
 
 ---
 
-## Step 8: Confirm
+## Step 8: Open the WinsomeChat window and confirm
 
-Tell the user:
+Open the WinsomeChat sessions window focused on the new session via its URL scheme:
+
+```bash
+open "winsome://session/SESSION_ID"
 ```
-Spawned: TASK_CONTENT
-Project: PROJECT_NAME → PROJECT_PATH
+
+Then tell the user:
+```
+Spawned on the session server: TASK_CONTENT
+Session: SESSION_ID  (PROJECT_FOR_SERVER)
+Window:  WinsomeChat → focused on this session
 Todoist: → In-Progress
 ```
 
