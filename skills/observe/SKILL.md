@@ -40,19 +40,17 @@ If no tasks are returned, tell the user: "No tasks labeled 'observation' found."
 
 ## Step 3: Sorting loop
 
-The Observations vault note lives at:
-```
-~/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault/Observations 👀.md
-```
+Observations are split into per-category files inside the vault:
 
-The defined categories (section headers in the file) are:
-1. Power & Systems
-2. Culture & Social Dynamics
-3. Cognition & Learning
-4. Strategy & Execution
-5. Geography, Cities, and Density
-6. Technology & Infrastructure
-7. Philosophy & Meta Principles
+| Category | File |
+|---|---|
+| Power & Systems | `Observations/Power and Systems.md` |
+| Culture & Social Dynamics | `Observations/Culture and Social Dynamics.md` |
+| Cognition & Learning | `Observations/Cognition and Learning.md` |
+| Strategy & Execution | `Observations/Strategy and Execution.md` |
+| Geography, Cities, and Density | `Observations/Geography Cities and Density.md` |
+| Technology & Infrastructure | `Observations/Technology and Infrastructure.md` |
+| Philosophy & Meta Principles | `Observations/Philosophy and Meta Principles.md` |
 
 Open with: **"X observation tasks to sort. Let's go."**
 
@@ -67,49 +65,32 @@ Show:
 
 ### Pick a category and file it
 
-Pick the best-fit category from the 7 above — no confirmation needed, just decide and act. Then immediately append to the vault file.
+Pick the best-fit category from the 7 above — no confirmation needed, just decide and act. Then immediately append to the correct category file.
 
-Use this Python snippet to append the observation as a bullet under the correct section header. Replace `CATEGORY` with the exact section title (e.g. `Power & Systems`) and `OBSERVATION_TEXT` with the task content:
+Use this Python snippet. Replace `CATEGORY_FILE` with the relative path (e.g. `Observations/Power and Systems.md`) and `OBSERVATION_TEXT` with the task content:
 
 ```bash
 python3 << 'PYEOF'
 import os
-VAULT = os.path.expanduser('~/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault/Observations \U0001f440.md')
-CATEGORY = 'CATEGORY'
+VAULT_DIR = os.path.expanduser('~/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault')
+FILE_PATH = os.path.join(VAULT_DIR, 'CATEGORY_FILE')
 TEXT = 'OBSERVATION_TEXT'
 
-with open(VAULT, 'rb') as f:
+with open(FILE_PATH, 'rb') as f:
     content = f.read().decode('utf-8')
 
-lines = content.split('\n')
+bullet = f'- {TEXT}'
+if not content.endswith('\n'):
+    content += '\n'
+content += bullet + '\n'
 
-# Find the section header
-header_idx = None
-for i, line in enumerate(lines):
-    stripped = line.lstrip('#').strip()
-    if stripped.lower() == CATEGORY.lower():
-        header_idx = i
-        break
-
-if header_idx is None:
-    print(f'ERROR: section "{CATEGORY}" not found')
-else:
-    # Find insertion point: last non-empty line before the next section header
-    insert_at = header_idx + 1
-    for i in range(header_idx + 1, len(lines)):
-        if lines[i].startswith('#'):
-            break
-        if lines[i].strip():
-            insert_at = i + 1
-
-    lines.insert(insert_at, f'* {TEXT}')
-    with open(VAULT, 'wb') as f:
-        f.write('\n'.join(lines).encode('utf-8'))
-    print('OK')
+with open(FILE_PATH, 'wb') as f:
+    f.write(content.encode('utf-8'))
+print('OK')
 PYEOF
 ```
 
-If the script prints `ERROR`, tell the user what went wrong and don't close the task.
+If the script errors, tell the user what went wrong and don't close the task.
 
 ### Close the task
 
