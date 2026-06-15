@@ -29,6 +29,15 @@ To add or change a skill/command: edit inside `~/winsomeApp/claude-skills`, comm
 
 **Confirm before large commits.** Before running `git commit`, check `git diff --staged --stat`. If the total lines changed (insertions + deletions) is ≥ 50, or ≥ 5 files are changed, show the stat summary and proposed commit message and wait for approval. Below that threshold, commit directly.
 
+## Vocabulary
+
+These terms have specific meanings across the Winsome system. Use them consistently.
+
+- **Mining** — a task that needs more work before it's implementation-ready. Lives in the Todoist "Mining" section. Still has open scope, unknown files, or unresolved questions. Processed via `/mine`.
+- **Diamond** — an implementation-ready planning note at `Diamonds/[Project]/[Task].md` in the vault. Scope is locked, files identified, decision checklist fully resolved. No open unknowns. Produced by `/diamond` after real investigation. The standard is `Diamonds/SleeperDynastyAgent/Prompt-Cache Consolidation.md`.
+- **Observation** — a raw insight or claim captured via Todoist `@observation` label. Routed nightly into `Observations/[Category].md` by `observe.sh`.
+- **Protocol** — a structured procedure executed by WinsomeChat. Lives in `Protocols/` in the vault. Executable, not just reference.
+
 ## Vault behavior (Obsidian / PKM)
 
 When working with vault notes at `~/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault`, stay alert for these signals and surface them — don't act without asking:
