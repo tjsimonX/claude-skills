@@ -37,10 +37,15 @@ Find the project whose `name` matches `$ARGUMENTS` (case-insensitive). If no mat
 ## Step 3: Find or create the Mining section
 
 ```bash
-curl -s -H "Authorization: Bearer TOKEN" "https://api.todoist.com/api/v1/sections?project_id=PROJECT_ID"
+SCRIPT=~/winsomeApp/Winsome/scripts/sweep_fetch.sh
+SECTION_ROWS=$(bash "$SCRIPT" sections PROJECT_ID TOKEN)
 ```
 
-Find the section named "Mining" (case-insensitive) and store its `id` as `MINING_SECTION_ID`. If none exists, create it:
+`SECTION_ROWS`: one line per section — `SECTION_ID|NAME`. Parse by splitting on `|`.
+
+Find the row whose name matches "Mining" (case-insensitive). Store its id as `MINING_SECTION_ID`.
+
+If no Mining section exists, create it:
 ```bash
 curl -s -X POST \
   -H "Authorization: Bearer TOKEN" \
@@ -55,12 +60,14 @@ Store the returned `id` as `MINING_SECTION_ID`.
 ## Step 4: Fetch unsectioned tasks
 
 ```bash
-curl -s -H "Authorization: Bearer TOKEN" "https://api.todoist.com/api/v1/tasks?project_id=PROJECT_ID"
+TASK_ROWS=$(bash "$SCRIPT" tasks PROJECT_ID TOKEN)
 ```
 
-Filter to tasks where `section_id` is null or absent. Skip any task whose `content` starts with `*`.
+`TASK_ROWS`: one line per qualifying task — `TASK_ID|TITLE|DESCRIPTION` (description ≤100 chars). Pre-filtered: no section, no due date, not starting with `*`.
 
-If none, tell the user: "No unsectioned tasks in [project] — all clear." and stop.
+Parse each line by splitting on `|` to get `task_id`, `title`, `desc`.
+
+If `TASK_ROWS` is empty, tell the user: "No unsectioned tasks in [project] — all clear." and stop.
 
 ---
 

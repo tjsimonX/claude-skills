@@ -55,25 +55,21 @@ Total: N projects to sweep.
 
 For each standard project, in order:
 
-### 4a. Fetch tasks and sections in parallel
+### 4a. Fetch tasks and sections
 
-Tasks:
 ```bash
-curl -s -H "Authorization: Bearer TOKEN" "https://api.todoist.com/api/v1/tasks?project_id=PROJECT_ID"
+SCRIPT=~/winsomeApp/Winsome/scripts/sweep_fetch.sh
+TASK_ROWS=$(bash "$SCRIPT" tasks PROJECT_ID TOKEN)
+SECTION_ROWS=$(bash "$SCRIPT" sections PROJECT_ID TOKEN)
 ```
-Filter to tasks where **both** conditions hold:
-- `section_id` is null or absent
-- `due` is null or absent
 
-Skip any task whose `content` starts with `*`.
+`TASK_ROWS`: one line per qualifying task — `TASK_ID|TITLE|DESCRIPTION` (description ≤100 chars). Pre-filtered: no section, no due date, not starting with `*`. Empty string if nothing qualifies.
 
-Sections:
-```bash
-curl -s -H "Authorization: Bearer TOKEN" "https://api.todoist.com/api/v1/sections?project_id=PROJECT_ID"
-```
-Store the full list of sections (id + name) for this project.
+`SECTION_ROWS`: one line per section — `SECTION_ID|NAME`.
 
-If no tasks pass the filter, print: "**[Project]** — nothing to triage. Skipping." and move on.
+Parse tasks by splitting each line on `|` to get `task_id`, `title`, `desc`. Parse sections the same way to build a name→id map for matching user input.
+
+If `TASK_ROWS` is empty, print: "**[Project]** — nothing to triage. Skipping." and move on.
 
 ### 4b. Open the project
 
