@@ -8,8 +8,10 @@ description: >
   "apply Zettelkasten", "organize my PKM", "separate my notes", "link my notes", or
   any time they want their Obsidian vault reorganized for navigability and atomicity.
 
-  Invoke as /pkm-split [vault-path]
-  Defaults to ~/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault if no path given.
+  Invoke as /pkm-split [path]
+  - If path is a .md file → single-file mode: split just that note
+  - If path is a directory → vault mode: full vault restructure
+  - No argument → vault mode, defaults to ~/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault
 ---
 
 # PKM Split Skill
@@ -24,14 +26,70 @@ The PKM linking guide lives at `~/winsomeApp/pkm-linking-guide.md`. Read it in f
 
 ---
 
-## Phase 1 — Resolve the vault path
+## Phase 1 — Detect mode from argument
 
-If `$ARGUMENTS` is provided, use it as the vault path. Otherwise default to:
-`~/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault`
+Expand `~` in `$ARGUMENTS` to the full home directory.
 
-Expand `~` to the full home directory.
+**If `$ARGUMENTS` ends in `.md`** (or resolves to a markdown file): run **Single-File Mode** (Phase 1S below). Skip Phases 2–5 of vault mode entirely.
+
+**If `$ARGUMENTS` is a directory path, or empty**: run **Vault Mode**. Default path if empty: `~/Library/Mobile Documents/com~apple~CloudDocs/winsomeVault`.
 
 ---
+
+## SINGLE-FILE MODE
+
+### Phase 1S — Read and analyze the file
+
+Read the target file in full. Identify every distinct idea, section, or concept bundled inside it. A "distinct idea" means: if this section were extracted to its own file, it would stand alone and make sense without the rest.
+
+List what you find, e.g.:
+```
+The Game.md contains 4 distinct sections:
+1. Social Rules (the 10 operating rules) — atomic, stands alone
+2. Gift of Gab Q&A — a reference script, stands alone
+3. Common Sayings / Bars — a quotes/maxims collection, stands alone
+4. Notes — 2 loose bullets, could stay in the parent
+```
+
+### Phase 2S — Ask two questions
+
+**Q1 — What to extract**
+Show the list above and ask: which sections should become their own files? Which stay in the original?
+
+**Q2 — Naming**
+For each section being extracted: suggest a filename (claim-style title where possible) and ask the user to confirm or rename.
+
+Do not proceed until both questions are answered.
+
+### Phase 3S — Plan and state it
+
+```
+New files to create:
+- [filename].md — extracted from [source section]
+- ...
+
+[Source file] modified:
+- [section] removed, replaced with link to [[filename]]
+- nav link added: ↑ [[Parent MOC]] (if vault has a MOC; otherwise skip)
+```
+
+Wait for user confirmation.
+
+### Phase 4S — Execute
+
+For each section being extracted:
+1. Write it as a new file in the same directory as the source (unless a subfolder is more appropriate)
+2. Add `↑ [[parent note]]` at the top so it links back
+3. Run the Compass — add N/S/E/W links where genuinely useful
+4. In the source file: replace the extracted section with a one-line link: `→ [[Filename]] — one-line description`
+
+### Phase 5S — Confirm
+
+List new files and what changed in the source. Ask: "Does this look right?"
+
+---
+
+## VAULT MODE
 
 ## Phase 2 — Audit the vault
 
