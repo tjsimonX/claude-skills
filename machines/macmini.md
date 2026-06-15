@@ -45,6 +45,8 @@ log show --last 10m --predicate 'process == "winsome"' --style compact
 
 One source of truth in `claude-skills/shared/`, imported by both machine configs. Edit those files, not copies.
 
+`@` imports chain recursively — a file imported by an imported file is also resolved at session startup (verified 2026-06-15).
+
 @~/winsomeApp/claude-skills/shared/git-behavior.md
 @~/winsomeApp/claude-skills/shared/vocabulary.md
 @~/winsomeApp/claude-skills/shared/vault-behavior.md
