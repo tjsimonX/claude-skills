@@ -160,7 +160,7 @@ PROJECT_FOR_SERVER="${PROJECT_NAME:-Winsome}"
 PAYLOAD=$(python3 - "$PROJECT_FOR_SERVER" "$SESSION_LABEL" <<'PY'
 import json, sys
 brief = open('/tmp/spawn_brief.txt').read()
-print(json.dumps({"project": sys.argv[1], "prompt": brief, "label": sys.argv[2]}))
+print(json.dumps({"project": sys.argv[1], "prompt": brief, "label": sys.argv[2], "model": "opus"}))
 PY
 )
 RESPONSE=$(curl -s -m 15 -w $'\n%{http_code}' -X POST \
@@ -188,7 +188,7 @@ Session server unreachable (HTTP_CODE). Open locally instead? (y/n)
     create window with default profile
     tell current window
       tell current session
-        write text "cd PROJECT_PATH && claude --dangerously-skip-permissions \"\$(cat /tmp/spawn_brief.txt)\""
+        write text "cd PROJECT_PATH && claude --dangerously-skip-permissions --model opus \"\$(cat /tmp/spawn_brief.txt)\""
       end tell
     end tell
   end tell
