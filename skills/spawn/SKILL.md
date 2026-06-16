@@ -89,6 +89,8 @@ Mission: [1-2 sentences stating exactly what to build or investigate, derived fr
 
 Start by [one concrete first step — e.g. "researching what the Copilot Money app API exposes" or "reading the existing dispatch.py to understand the routing logic"].
 
+Also derive `SESSION_LABEL`: a 3-5 word summary of the task (e.g. "Booksy automation research"). This is what shows in the WinsomeChat sidebar — keep it short, not the full task title.
+
 ---
 When this task is complete:
 1. If this involved a running app or server-side feature, invoke /verify to confirm the change works before closing.
@@ -155,7 +157,7 @@ Build the JSON payload from the brief and POST it. The server returns `201` imme
 
 ```bash
 PROJECT_FOR_SERVER="${PROJECT_NAME:-Winsome}"
-PAYLOAD=$(python3 - "$PROJECT_FOR_SERVER" "$TASK_CONTENT" <<'PY'
+PAYLOAD=$(python3 - "$PROJECT_FOR_SERVER" "$SESSION_LABEL" <<'PY'
 import json, sys
 brief = open('/tmp/spawn_brief.txt').read()
 print(json.dumps({"project": sys.argv[1], "prompt": brief, "label": sys.argv[2]}))
