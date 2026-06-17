@@ -1,6 +1,6 @@
 ---
 name: Spawn
-description: Launch a managed Claude Code session on the Mac mini from a pre-written brief. Call this at the END of a planning cycle — after the brief is ready in /tmp/spawn_brief.txt. Accepts an optional Todoist task ID to move to In-Progress. Invoke as /spawn [task_id].
+description: Launch a managed Claude Code session on the Mac mini. Synthesizes a brief from the current conversation context and opens a focused WinsomeChat window. Call at the end of a planning cycle. Invoke as /spawn <session label>.
 allowed-tools: Bash
 ---
 
@@ -11,97 +11,65 @@ allowed-tools: Bash
 $ARGUMENTS
 ```
 
-The input is either a Todoist task ID (~16 alphanumeric chars) or empty. The caller has already done all the thinking. The brief lives in `/tmp/spawn_brief.txt`. If that file doesn't exist, stop and tell the user: "Write the brief to /tmp/spawn_brief.txt first, then re-run /spawn."
+If empty, tell the user: "Provide a short session label — e.g. `/spawn Stop timing overhaul`" and stop.
 
 ---
 
-## Step 1: Read the brief and derive SESSION_LABEL
+## Step 1: Synthesize the brief
 
-```bash
-cat /tmp/spawn_brief.txt
-```
+From the current conversation context, compose a focused brief for the session. The session starts cold — give it everything it needs to begin immediately. Keep it tight.
 
-Extract:
-- `SESSION_LABEL` — from the `Task:` line, truncated to 5 words
-- `PROJECT_FOR_SERVER` — from the `Project:` line (first word); default to `Winsome` if not found
+Include:
+- **Task:** what to build or investigate (1 sentence)
+- **Project:** which project this lives in (infer from context — used to route to the right directory on the Mac mini)
+- **Mission:** what to accomplish and why
+- **Start by:** one concrete first action (specific file to read, command to run)
+- **Key files:** most relevant files to read first
+- **Success criteria:** how to know when it's done
 
----
-
-## Step 2: Todoist bookkeeping (only if a task ID was provided)
-
-Skip this step entirely if `$ARGUMENTS` is empty or doesn't look like a task ID.
-
-Get the token:
-```bash
-/usr/libexec/PlistBuddy -c "Print TODOIST_API_TOKEN" ~/winsomeApp/Winsome/winsome/Config/Secrets.local.plist 2>/dev/null
-```
-
-Fetch the task to get its `project_id`:
-```bash
-curl -s -H "Authorization: Bearer TOKEN" "https://api.todoist.com/api/v1/tasks/TASK_ID"
-```
-
-Find or create the "In-Progress" section:
-```bash
-curl -s -H "Authorization: Bearer TOKEN" "https://api.todoist.com/api/v1/sections?project_id=PROJECT_ID"
-```
-If no "In-Progress" section exists, create it:
-```bash
-curl -s -X POST -H "Authorization: Bearer TOKEN" -H "Content-Type: application/json" \
-  -d '{"project_id": "PROJECT_ID", "name": "In-Progress"}' \
-  "https://api.todoist.com/api/v1/sections"
-```
-
-Move the task and stamp the task ID into its description:
-```bash
-curl -s -X POST -H "Authorization: Bearer TOKEN" -H "Content-Type: application/json" \
-  -d '{"section_id": "SECTION_ID"}' \
-  "https://api.todoist.com/api/v1/tasks/TASK_ID/move"
-
-curl -s -X POST -H "Authorization: Bearer TOKEN" -H "Content-Type: application/json" \
-  -d '{"description": "task_id: TASK_ID"}' \
-  "https://api.todoist.com/api/v1/tasks/TASK_ID"
-```
+Use `$ARGUMENTS` as the session label.
 
 ---
 
-## Step 3: Launch the session
+## Step 2: Write the brief and launch
+
+Write the brief to a temp file, then POST to the session server. Replace `SESSION_LABEL` and `PROJECT_NAME` with the values derived in Step 1.
 
 ```bash
-PAYLOAD=$(python3 - << 'PY'
-import json, sys
+cat > /tmp/spawn_brief.txt << 'BRIEF'
+[PASTE BRIEF HERE]
+BRIEF
+
+PAYLOAD=$(python3 -c "
+import json
 brief = open('/tmp/spawn_brief.txt').read()
-print(json.dumps({"project": "PROJECT_FOR_SERVER", "prompt": brief, "label": "SESSION_LABEL", "model": "opus"}))
-PY
-)
+print(json.dumps({'project': 'PROJECT_NAME', 'prompt': brief, 'label': 'SESSION_LABEL', 'model': 'opus'}))
+")
+
 RESPONSE=$(curl -s -m 15 -w $'\n%{http_code}' -X POST \
   -H "Content-Type: application/json" \
   -d "$PAYLOAD" \
   http://homes-mac-mini.taild39f71.ts.net:7891/sessions)
+
 HTTP_CODE=$(printf '%s\n' "$RESPONSE" | tail -1)
 BODY=$(printf '%s\n' "$RESPONSE" | sed '$d')
 SESSION_ID=$(printf '%s' "$BODY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
+rm -f /tmp/spawn_brief.txt
 ```
 
-If `HTTP_CODE` is not `201` or `SESSION_ID` is empty, stop and tell the user:
-```
-Session server unreachable (HTTP_CODE). Brief is at /tmp/spawn_brief.txt — launch manually or retry.
-```
-Do not fall back silently.
+If `HTTP_CODE` is not `201` or `SESSION_ID` is empty, stop and tell the user the server is unreachable and paste the brief so they can launch manually.
 
 ---
 
-## Step 4: Open WinsomeChat and confirm
+## Step 3: Open WinsomeChat and confirm
 
 ```bash
 open "winsome://session/SESSION_ID"
-rm /tmp/spawn_brief.txt
 ```
 
 Tell the user:
 ```
 Spawned: SESSION_LABEL
-Session: SESSION_ID  (PROJECT_FOR_SERVER)
+Session: SESSION_ID  (PROJECT_NAME)
 WinsomeChat → focused on this session
 ```
-Include "Todoist → In-Progress" only if a task ID was provided.
