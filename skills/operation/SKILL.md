@@ -26,7 +26,6 @@ The reference structure is the existing **Eagle Has Landed** Todoist project:
 |---|---|---|
 | **Goal** | top-level project | `Goals/<Name>/Goal — <Name>.md` |
 | **Objective** | sub-project | `Goals/<Name>/Objective — <Obj>.md` |
-| **Step** | task under the sub-project | numbered line in the Objective note |
 
 Parity is bidirectional and is created by the script, not by you:
 - vault → todoist: `todoist_project_id` frontmatter
@@ -50,14 +49,15 @@ skill is refusing to skip Layer 1. Do not let the user jump straight to steps.
   it sits on the Life OS ladder); the **North Star** it climbs toward; what it **promotes to**
   when complete (the goal that becomes Now); the goal; cadence (default
   "Weekly review by default."); kill switch. Then gather **objectives** — each becomes a
-  sub-project. For each objective: a one-line `why`, and its `steps` (each step is a task;
-  capture a due date where one exists, or a recurring interval).
+  sub-project. For each objective: a one-line `why` and optional `notes` (blockers, criteria,
+  context).
   Once horizon is set, read the **Horizon allocation** block in [[Life OS]] and tell the user
   the focus share for that rung (e.g. "this is your Now rung → ~70% of focus") — so they're
   committing a realistic slice of time, not treating it as overflow.
 - **Layer 4 — The Persona.** Name, identity (present tense), 2–3 routines, internal motto,
-  shadow risk + Fi guardrail. This is optional-but-encouraged; skip fields the user has no
-  answer for rather than inventing them.
+  shadow risk + Fi guardrail, and a **playlist** — a music playlist (name, link, or vibe
+  description) that captures the audio anchor for this persona. This is optional-but-encouraged;
+  skip fields the user has no answer for rather than inventing them.
 
 Never invent Layer 1 or Layer 4 answers — those are the user's. Steps and structure you
 may draft for confirmation.
@@ -112,29 +112,24 @@ sub-projects participate automatically — no pipeline change needed.
     "persona": {
       "name": "", "identity": "",
       "routines": ["", ""],
-      "motto": "", "shadow_risk": ""
+      "motto": "", "shadow_risk": "", "playlist": ""
     }
   },
   "objectives": [
     {
       "name": "Education",
       "why": "One line tying it to the goal.",
-      "steps": [
-        { "content": "Submit graduation application", "due": "2026-07-01" },
-        { "content": "Purchase textbooks" },
-        { "content": "Weekly ops review", "due_string": "monday" }
-      ],
       "notes": "Free field — blockers, criteria, context."
     }
   ]
 }
 ```
 
-- A step uses **either** `due` (a `YYYY-MM-DD` date) **or** `due_string` (a recurring
-  interval like `"monday"` / `"every 2 weeks"`), or neither.
 - `horizon` is `now`, `next`, or `later` — the rung on the Life OS ladder. `north_star` is
   the fixed star it climbs toward. `promotes_to` is the goal name that becomes Now when this
   one completes (omit if unknown).
 - `pillar` mirrors the existing vault convention (e.g. `Identity`). Ask once; applies to the
   whole goal.
+- `playlist` is free-form: a name, a link, or a vibe description. It surfaces as the audio
+  anchor in the Layer 4 section of the Goal note.
 - Omit persona/terrain fields the user didn't answer — the script renders only what's present.
